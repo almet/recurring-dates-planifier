@@ -1,0 +1,40 @@
+# Format -- Day of week, week number, Label, repeat every, category
+
+# Livraisons
+jeu, 1, allday, Livraison, 1w, support
+
+# Brassin de Fièvre Tropicale
+mar, 1, allday, Brassage #1, 3w, prod
+lun, 3, 9h-10h, DH #1, 3w, support
+lun, 3, 17h-18h, DH #1, 3w, support
+mar, 3, 9h-10h, DH #1, 3w, support
+mar, 3, 17h-18h, DH #1 + CC, 3w, support
+mar, 4, allday, Transfert + Carbo #1, 3w, prod
+mer, 4, allday, MEF #1, 3w, prod
+jeu, 4, 9h-12h, Transfert #1, 3w, prod
+ven, 4, allday, MEB #1, 3w, prod
+ven, 4, allday, MEB #1, 3w, support
+
+# Brassin Nouveau Monde
+mar, 2, allday, Brassage #2, 3w, prod
+lun, 4, 9h-10h, DH #2, 3w, support
+lun, 4, 17h-18h, DH #2, 3w, support
+mar, 4, 9h-10h, DH #2, 3w, support
+mar, 4, 17h-18h, DH #2 + CC, 3w, support
+mar, 5, allday, Transfert + Carbo #2, 3w, prod
+mer, 5, allday, MEF #2, 3w, prod
+jeu, 5, 9h-12h, Transfert #2, 3w, prod
+ven, 5, allday, MEB #2, 3w, prod
+ven, 5, allday, MEB #2, 3w, support
+
+# Brassin EQD
+mar, 3, allday, Brassage #3, 3w, prod
+lun, 5, 9h-10h, DH #3, 3w, support
+lun, 5, 17h-18h, DH #3, 3w, support
+mar, 5, 9h-10h, DH #3, 3w, support
+mar, 5, 17h-18h, DH #3 + CC, 3w, support
+mar, 6, allday, Transfert + Carbo #3, 3w, prod
+mer, 6, allday, MEF #3, 3w, prod
+jeu, 6, 9h-12h, Transfert #3, 3w, prod
+ven, 6, allday, MEB #3, 3w, prod
+ven, 6, allday, MEB #3, 3w, support
