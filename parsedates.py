@@ -1,20 +1,65 @@
 import maya
-import ics
+from jinja2 import Environment, FileSystemLoader
+import os.path
+import codecs
+import json
 
+TEMPLATES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 DAYS_OF_WEEK = ['lun', 'mar', 'mer', 'jeu', 'ven']
 TEMPORALITY = {
     'w': 7,
     'd': 1,
     'm': 4*7
 }
+COLORS = {
+    'prod': 'blue',
+    'support': '#257e4a'
+}
 
 
 class Event(object):
 
-    def __init__(self, date, label, category):
+    def __init__(self, date, label, category, duration=None, all_day=None):
         self.date = date
+        self.duration = duration
+        self.all_day = all_day
         self.label = label
         self.category = category
+
+    @classmethod
+    def from_rule(cls, rule, date):
+        kwargs = {}
+
+        if rule.hours == 'allday':
+            kwargs['all_day'] = True
+
+        elif rule.hours:
+            start, end = rule.hours.split('-')
+            start = int(start[0:-1])
+            end = int(end[0:-1])
+            date = date.add(hours=start)
+            kwargs['duration'] = end - start
+
+        return cls(date, rule.label, rule.category, **kwargs)
+
+    def to_ical(self):
+        from pdb import set_trace; set_trace()
+        e = ics.Event(self.label, self.date.iso8601())
+        if self.duration:
+            e.duration = self.duration
+
+        if self.all_day:
+            e.make_all_day()
+
+        return e
+
+    def to_fullcalendar_dict(self):
+        return {
+            'title': self.label,
+            'start': self.date.iso8601(),
+            'color': COLORS[self.category]
+        }
+
 
 
 class Rule(object):
@@ -37,10 +82,10 @@ class Rule(object):
         days_delta = (self.week - 1) * 7 + DAYS_OF_WEEK.index(self.dow)
         first_occurence = start.add(days=days_delta)
         current = first_occurence
-        occurences = [Event(first_occurence, label=self.label, category=self.category), ]
+        occurences = [Event.from_rule(self, first_occurence), ]
         while current < end:
             current = current.add(days=self.get_reccurence_in_days())
-            occurences.append(Event(current, label=self.label, category=self.category))
+            occurences.append(Event.from_rule(self, current))
         return occurences
 
 
@@ -59,14 +104,9 @@ def read_rules(filename):
                 pass
             else:
                 rules.append(parse_rule(line.strip('\n')))
-    return rules 
+    return rules
 
 
-def event_to_ical(event):
-    e = ics.Event()
-    e.name = event.label
-    e.begin = event.date.iso8601()
-    return e
 
 
 def generate_events(rules):
@@ -80,16 +120,35 @@ def generate_events(rules):
 
 def generate_ical(events, filename, category):
     events = filter(lambda x: x.category == category, events)
-    calendar = ics.Calendar(events=map(event_to_ical, events))
+    calendar = ics.Calendar(events=[e.to_ical() for e in events])
 
     with open(filename, 'w') as f:
         f.writelines(calendar)
 
 
+def render_template(output_path, tpl_name, filename, **options):
+    env = Environment(loader=FileSystemLoader(TEMPLATES_PATH))
+    template = env.get_template(tpl_name)
+    output = template.render(**options)
+
+    full_path = os.path.join(output_path, filename)
+
+    with codecs.open(full_path, 'w+', encoding='utf-8') as f:
+        f.write(output)
+
+
+def generate_fullcalendar(events, output_path):
+
+    render_template(
+        output_path, 'index.html', 'index.html',
+        events=json.dumps([e.to_fullcalendar_dict() for e in events]), defaultdate='2018-07-01'
+    )
+
+
 if __name__ == '__main__':
     rules = read_rules('events.txt')
     events = generate_events(rules)
+    generate_fullcalendar(events, 'app')
 
-    generate_ical(events, 'prod.ical', 'prod')
-    generate_ical(events, 'support.ical', 'support')
-
+    # generate_ical(events, 'prod.ical', 'prod')
+    # generate_ical(events, 'support.ical', 'support')
