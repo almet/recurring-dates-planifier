@@ -3,6 +3,7 @@ from jinja2 import Environment, FileSystemLoader
 import os.path
 import codecs
 import json
+import re
 
 TEMPLATES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 DAYS_OF_WEEK = ['lun', 'mar', 'mer', 'jeu', 'ven']
@@ -19,12 +20,18 @@ COLORS = {
 
 class Event(object):
 
-    def __init__(self, date, label, category, duration=None, all_day=None):
+    def __init__(self, date, label, category, repeat_every, duration=None, all_day=None, count=1):
         self.date = date
+        self._label = label
+        self.category = category
+        self.repeat_every = repeat_every  # in days.
         self.duration = duration
         self.all_day = all_day
-        self.label = label
-        self.category = category
+        self.count = count
+
+    @property
+    def label(self):
+        return re.sub('#', '#%s' % self.count, self._label)
 
     @classmethod
     def from_rule(cls, rule, date):
@@ -40,7 +47,18 @@ class Event(object):
             date = date.add(hours=start)
             kwargs['duration'] = end - start
 
-        return cls(date, rule.label, rule.category, **kwargs)
+        return cls(date, rule.label, rule.category, rule.repeat_every, **kwargs)
+
+    def next(self):
+        return Event(
+            self.date.add(days=self.repeat_every),
+            self._label,
+            self.category,
+            self.repeat_every,
+            duration=self.duration,
+            all_day=self.all_day,
+            count=self.count + 1
+        )
 
     def to_ical(self):
         from pdb import set_trace; set_trace()
@@ -71,7 +89,8 @@ class Rule(object):
         self.recurrance = recurrance
         self.category = category
 
-    def get_reccurence_in_days(self):
+    @property
+    def repeat_every(self):
         number = int(self.recurrance[0:-1])
         temporality = TEMPORALITY[self.recurrance[-1]]
         return number * temporality
@@ -81,11 +100,12 @@ class Rule(object):
         # start needs to be a monday.
         days_delta = (self.week - 1) * 7 + DAYS_OF_WEEK.index(self.dow)
         first_occurence = start.add(days=days_delta)
-        current = first_occurence
-        occurences = [Event.from_rule(self, first_occurence), ]
-        while current < end:
-            current = current.add(days=self.get_reccurence_in_days())
-            occurences.append(Event.from_rule(self, current))
+        current = Event.from_rule(self, first_occurence)
+
+        occurences = [current, ]
+        while current.date < end:
+            current = current.next()
+            occurences.append(current)
         return occurences
 
 
