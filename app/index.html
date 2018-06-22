@@ -12,6 +12,9 @@
   $(document).ready(function() {
 
     $('#calendar').fullCalendar({
+      defaultView: 'month',
+      firstDay: 1,
+      height: 'parent',
       header: {
         left: 'prev,next today',
         center: 'title',
@@ -29,23 +32,36 @@
 </script>
 <style>
 
-  body {
-    margin: 40px 10px;
-    padding: 0;
-    font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
-    font-size: 14px;
-  }
+html, body {
+  overflow: hidden; /* don't do scrollbars */
+  font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+  font-size: 14px;
+}
 
-  #calendar {
-    max-width: 900px;
-    margin: 0 auto;
-  }
+#calendar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.fc-header-toolbar {
+  /*
+  the calendar will be butting up against the edges,
+  but let's scoot in the header's buttons
+  */
+  padding-top: 1em;
+  padding-left: 1em;
+  padding-right: 1em;
+}
 
 </style>
 </head>
 <body>
-
-  <div id='calendar'></div>
+  <div id='calendar-container'>
+    <div id='calendar'></div>
+  </div>
 
 </body>
 </html>
