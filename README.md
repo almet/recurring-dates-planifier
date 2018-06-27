@@ -40,3 +40,5 @@ The tool is able to either:
 
 - generate a calendar as set of HTML files, 
 - generate a number of ics calendars.
+
+![/capture.png?raw=true](/capture.png?raw=true)
