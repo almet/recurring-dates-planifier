@@ -1,5 +1,6 @@
 import maya
 from jinja2 import Environment, FileSystemLoader
+import sys
 import os.path
 import codecs
 import json
@@ -20,22 +21,24 @@ COLORS = {
 
 class Event(object):
 
-    def __init__(self, date, label, category, repeat_every, duration=None, all_day=None, count=1):
+    def __init__(self, date, label, category, repeat_every, duration=None, all_day=None, counter=1):
         self.date = date
         self._label = label
         self.category = category
         self.repeat_every = repeat_every  # in days.
         self.duration = duration
         self.all_day = all_day
-        self.count = count
+        self.counter = counter
 
     @property
     def label(self):
-        return re.sub('#', '#%s' % self.count, self._label)
+        return re.sub('#', '#%s' % self.counter, self._label)
 
     @classmethod
     def from_rule(cls, rule, date):
-        kwargs = {}
+        kwargs = {
+            'counter': rule.counter
+        }
 
         if rule.hours == 'allday':
             kwargs['all_day'] = True
@@ -57,7 +60,7 @@ class Event(object):
             self.repeat_every,
             duration=self.duration,
             all_day=self.all_day,
-            count=self.count + 1
+            counter=self.counter + 1
         )
 
     def to_ical(self):
@@ -81,13 +84,14 @@ class Event(object):
 
 
 class Rule(object):
-    def __init__(self, dow, week, hours, label, recurrance, category):
+    def __init__(self, dow, week, hours, label, recurrance, category, counter):
         self.dow = dow
         self.week = int(week)
         self.hours = hours
         self.label = label
         self.recurrance = recurrance
         self.category = category
+        self.counter = counter
 
     @property
     def repeat_every(self):
@@ -110,12 +114,12 @@ class Rule(object):
 
 
 
-def parse_rule(text):
+def parse_rule(text, counter):
     args = text.split(',')
-    return Rule(*map(str.strip, args))
+    return Rule(*map(str.strip, args), counter=counter)
 
 
-def read_rules(filename):
+def read_rules(filename, counter=1):
     rules = []
 
     with open(filename) as f:
@@ -123,14 +127,14 @@ def read_rules(filename):
             if len(line) < 3 or line.startswith('#'):
                 pass
             else:
-                rules.append(parse_rule(line.strip('\n')))
+                rules.append(parse_rule(line.strip('\n'), counter=counter))
     return rules
 
 
 
 
-def generate_events(rules):
-    start = maya.parse("2018, 7, 2")
+def generate_events(rules, start):
+    start = maya.parse(start)
     end = start.add(days=365)
     events = []
     for rule in rules:
@@ -166,9 +170,13 @@ def generate_fullcalendar(events, output_path):
 
 
 if __name__ == '__main__':
-    rules = read_rules('events.txt')
-    events = generate_events(rules)
-    generate_fullcalendar(events, 'app')
-
-    # generate_ical(events, 'prod.ical', 'prod')
-    # generate_ical(events, 'support.ical', 'support')
+    if len(sys.argv) != 4:
+        raise Exception("Syntax is python generate-calendar.py rules.txt startdate format")
+    rules_file, start_date, format_ = sys.argv[1:]
+    rules = read_rules(rules_file, counter=9)
+    events = generate_events(rules, start_date)
+    if format_ == 'html':
+        generate_fullcalendar(events, 'app')
+    elif format_ == 'ical':
+        generate_ical(events, 'prod.ical', 'prod')
+        generate_ical(events, 'support.ical', 'support')

@@ -3,14 +3,45 @@
 # Livraisons
 jeu, 1, allday, Livraison, 1w, support
 
+# Points
+lun, 1, 9h-12h, Point mensuel, 1w, prod
+lun, 1, 9h-12h, Point mensuel, 1w, support
+
 # Brassins
-mar, 1, allday, Brassage #, 1w, prod
-lun, 3, 9h-10h, DH #, 1w, support
-lun, 3, 17h-18h, DH #, 1w, support
-mar, 3, 9h-10h, DH #, 1w, support
-mar, 3, 17h-18h, DH # + CC, 1w, support
-mar, 4, allday, Transfert + Carbo #, 1w, prod
-mer, 4, allday, MEF #, 1w, prod
-jeu, 4, 9h-12h, Transfert #, 1w, prod
-ven, 4, allday, MEB #, 1w, prod
-ven, 4, allday, MEB #, 1w, support
+lun, 1, 14h-16h, Préparation Brassage #, 4w, prod
+mar, 1, allday, Brassage #, 4w, prod
+lun, 3, 9h-10h, DH #, 4w, prod
+lun, 3, 17h-18h, DH #, 4w, prod
+mar, 3, 9h-10h, DH #, 4w, support
+mar, 3, 17h-18h, DH # + CC, 4w, support
+mar, 4, 9h-12h, Transfert #, 4w, support
+mer, 4, allday, MEB #, 4w, prod
+mer, 4, allday, MEB #, 4w, support
+jeu, 4, allday, Transfert + Carbo #, 4w, prod
+ven, 4, allday, MEF #, 4w, prod
+
+# Brassins
+lun, 2, 14h-16h, Préparation Brassage #, 4w, prod
+mar, 2, allday, Brassage #, 4w, prod
+lun, 4, 9h-10h, DH #, 4w, prod
+lun, 4, 17h-18h, DH #, 4w, prod
+mar, 4, 9h-10h, DH #, 4w, support
+mar, 4, 17h-18h, DH # + CC, 4w, support
+mar, 5, 9h-12h, Transfert #, 4w, support
+mer, 5, allday, MEB #, 4w, prod
+mer, 5, allday, MEB #, 4w, support
+jeu, 5, allday, Transfert + Carbo #, 4w, prod
+ven, 5, allday, MEF #, 4w, prod
+
+# Brassins
+lun, 3, 14h-16h, Préparation Brassage #, 4w, prod
+mar, 3, allday, Brassage #, 4w, prod
+lun, 5, 9h-10h, DH #, 4w, prod
+lun, 5, 17h-18h, DH #, 4w, prod
+mar, 5, 9h-10h, DH #, 4w, support
+mar, 5, 17h-18h, DH # + CC, 4w, support
+mar, 6, 9h-12h, Transfert #, 4w, support
+mer, 6, allday, MEB #, 4w, prod
+mer, 6, allday, MEB #, 4w, support
+jeu, 6, allday, Transfert + Carbo #, 4w, prod
+ven, 6, allday, MEF #, 4w, prod
